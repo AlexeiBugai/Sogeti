@@ -1,5 +1,8 @@
 package nl.sogeti.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,10 +50,18 @@ public class LeaserateController {
 		leaserateResponse.setMileage(leaserateRequest.getMileage());
 		leaserateResponse.setInterest(leaserateRequest.getInterest());
 		
-		double Leaserate = (((leaserateRequest.getMileage() / 12) * leaserateRequest.getDuration()) / car.getNettPrice()) + (((leaserateRequest.getInterest() / 100) * car.getNettPrice()) / 12);
+		double Leaserate = round((((leaserateRequest.getMileage() / 12) * leaserateRequest.getDuration()) / car.getNettPrice()) + (((leaserateRequest.getInterest() / 100) * car.getNettPrice()) / 12), 2);
 		leaserateResponse.setLeaserate(Leaserate);
 		
 		return leaserateResponse;
 	}
-  
+
+	private double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(Double.toString(value));
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return bd.doubleValue();
+	}
+	
 }
